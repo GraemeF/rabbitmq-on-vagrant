@@ -27,8 +27,8 @@ Vagrant::Config.run do |config|
 	                                "--name", node[:hostname],
 	                                "--memory", memory.to_s]
 
-          #node_config.vm.box = "lucid32-1"
-          node_config.vm.box = "ubuntu-lucid-64"
+          node_config.vm.box = "lucid32-1"
+          #node_config.vm.box = "ubuntu-lucid-64"
           node_config.vm.host_name = node[:hostname]
 
 		  node_config.vm.network :hostonly, node[:ip]
