@@ -1,0 +1,45 @@
+$: << File.expand_path(File.dirname(__FILE__) + "../../../lib")
+
+
+Vagrant::Config.run do |config|
+
+  config.ssh.max_tries = 50
+  config.vm.boot_mode = :gui
+
+      nodes = [	
+      	  {:hostname => 'haproxy', :ip => '192.168.2.2',:fwdhost => 5672, :fwdguest => 5672},	 
+		  {:hostname => 'rabbitmq-server-a', :ip => '192.168.2.10'},
+		  {:hostname => 'rabbitmq-server-b', :ip => '192.168.2.11'},
+		  {:hostname => 'rabbitmq-server-c',:ip => '192.168.2.12'},
+		  
+      ]
+
+      nodes.each do |node|
+        config.vm.define node[:hostname] do |node_config|
+
+	      if node[:fwdhost]
+	        node_config.vm.forward_port(node[:fwdguest], node[:fwdhost])
+	      end
+	
+	      memory = node[:ram] ? node[:ram] : 320;
+	
+	      node_config.vm.customize ["modifyvm", :id,
+	                                "--name", node[:hostname],
+	                                "--memory", memory.to_s]
+
+          #node_config.vm.box = "lucid32-1"
+          node_config.vm.box = "ubuntu-lucid-64"
+          node_config.vm.host_name = node[:hostname]
+
+		  node_config.vm.network :hostonly, node[:ip]
+		  
+          node_config.vm.provision :puppet do |puppet|
+            puppet.manifests_path = '../../../puppet/manifests'
+            puppet.manifest_file = 'site.pp'
+            puppet.module_path = ['../../../puppet/services', '../../../puppet/modules']		  
+			#puppet.options = ["--verbose","--debug"]
+          end
+        end
+      end
+
+end

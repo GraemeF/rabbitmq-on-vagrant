@@ -1,0 +1,42 @@
+# HAProxy configuration example based on book 
+# RabbitMQ IN ACTION 
+# by Alvaro Videla and Jason J.W. Williams
+
+global
+        log 127.0.0.1   local0
+        maxconn 4096
+		#stats socket /tmp/haproxy.socket uid haproxy mode 770 level admin
+		stats socket /tmp/haproxy.socket user haproxy mode 770 
+        #user haproxy
+        #group haproxy
+        daemon
+
+defaults
+		log    global
+		mode    tcp
+		option    tcplog
+		option    dontlognull
+		retries    3
+		option redispatch
+		maxconn    2000
+		timeout connect    5s
+		timeout client 120s
+		timeout server 120s
+
+
+listen  rabbitmq_cluster 0.0.0.0:5672
+        mode tcp
+        option tcplog
+        log global
+        balance roundrobin
+        # following is derived from Puppet facter rabbitnodes 
+        <% rabbitnodes.each do |val| -%>
+        server  <%= val.chomp %>:5672 check inter 5000 rise 2 fall 3<% end -%>
+        
+listen private_monitoring :80
+    mode http
+    option httplog
+    stats enable
+    stats uri   /
+    stats refresh 5s
+		
