@@ -4,7 +4,8 @@ $: << File.expand_path(File.dirname(__FILE__) + "../../../lib")
 Vagrant::Config.run do |config|
 
   config.ssh.max_tries = 50
-  config.vm.boot_mode = :gui
+  #config.vm.boot_mode = :gui
+  config.vm.boot_mode = :headless
 
       nodes = [	
       	  {:hostname => 'haproxy', :ip => '192.168.2.2',:fwdhost => 5672, :fwdguest => 5672},	 
@@ -28,7 +29,7 @@ Vagrant::Config.run do |config|
 	                                "--memory", memory.to_s]
 
           node_config.vm.box = "lucid32-1"
-          #node_config.vm.box = "ubuntu-lucid-64"
+          #node_config.vm.box = "lucid64-1"
           node_config.vm.host_name = node[:hostname]
 
 		  node_config.vm.network :hostonly, node[:ip]
