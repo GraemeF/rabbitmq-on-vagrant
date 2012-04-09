@@ -8,7 +8,7 @@ Vagrant::Config.run do |config|
   config.vm.boot_mode = :headless
 
       nodes = [	
-      	  {:hostname => 'haproxy', :ip => '192.168.2.2',:fwdhost => 5672, :fwdguest => 5672},	 
+      	  {:hostname => 'haproxy', :ip => '192.168.2.2',:fwdhost => 5672, :fwdguest => 5672, :box => 'ubuntu-1110-server-amd64'},
 		  {:hostname => 'rabbitmq-server-a', :ip => '192.168.2.10'},
 		  {:hostname => 'rabbitmq-server-b', :ip => '192.168.2.11'},
 		  {:hostname => 'rabbitmq-server-c',:ip => '192.168.2.12'},
@@ -28,7 +28,7 @@ Vagrant::Config.run do |config|
 	                                "--name", node[:hostname],
 	                                "--memory", memory.to_s]
 
-          node_config.vm.box = "lucid32-1"
+          node_config.vm.box = node[:box] ? node[:box] : "lucid32-1";
           #node_config.vm.box = "lucid64-1"
           node_config.vm.host_name = node[:hostname]
 
