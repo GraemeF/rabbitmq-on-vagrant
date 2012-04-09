@@ -46,8 +46,11 @@ class rabbitmq ($version = '2.7.1', $enabled = false) {
 			command => "sudo dpkg -i /tmp/${installer}",
 			creates => "/usr/lib/rabbitmq/bin/rabbitmq-server",
 			require => File["/tmp/${installer}"];
+		'install-plugins':
+			command => "sudo rabbitmq-plugins enable rabbitmq_management",
+			require => Exec["install-deb"];
 		'rabbit-stop':
-			require	=> Exec['install-deb'],
+			require	=> Exec['install-plugins'],
 			command	=> '/etc/init.d/rabbitmq-server stop';
 		'rabbit-start':
 			require	=> Exec['rabbit-stop'],
